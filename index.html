@@ -18,7 +18,7 @@
 <button onclick="check()">Check</button>
 
 <h3 id="result"></h3>
-
+<div id="highlighted" style="white-space: pre-wrap; font-size: 16px;"></div>
 <script>
 function clean(text) {
   return text
@@ -27,24 +27,37 @@ function clean(text) {
     .replace(/\s+/g, " ")
     .trim();
 }
-
 function check() {
-  let o = clean(document.getElementById("original").value).split(" ");
-  let t = clean(document.getElementById("typed").value).split(" ");
+  let originalText = document.getElementById("original").value;
+  let typedText = document.getElementById("typed").value;
 
-  let errors = 0;
-  let i = 0, j = 0;
-
-  while (i < o.length && j < t.length) {
-    if (o[i] === t[j]) {
-      i++; j++;
-    } else {
-      errors++;
-      i++; j++;
-    }
+  if (!typedText.trim()) {
+    alert("Type the transcription first");
+    return;
   }
 
-  errors += (o.length - i) + (t.length - j);
+  let o = clean(originalText).split(" ");
+  let t = clean(typedText).split(" ");
+
+  let i = 0, j = 0;
+  let errors = 0;
+  let output = [];
+
+  while (i < o.length || j < t.length) {
+    if (o[i] === t[j]) {
+      output.push(o[i]);
+      i++; j++;
+    } else {
+      if (t[j]) {
+        output.push(`<span style="color:red">${t[j]}</span>`);
+        errors++;
+        j++;
+      }
+      if (o[i]) {
+        i++;
+      }
+    }
+  }
 
   let accuracy = ((o.length - errors) / o.length) * 100;
   accuracy = accuracy < 0 ? 0 : accuracy.toFixed(2);
@@ -53,6 +66,10 @@ function check() {
     "Total Words: " + o.length +
     "\nErrors: " + errors +
     "\nAccuracy: " + accuracy + "%";
+
+  document.getElementById("highlighted").innerHTML = output.join(" ");
+}
+
 }
 </script>
 
