@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shorthand Checker</title>
+  <style>
+    textarea { width: 100%; height: 120px; }
+    button { padding: 10px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+<h3>Original Text</h3>
+<textarea id="original"></textarea>
+
+<h3>Type Here</h3>
+<textarea id="typed" onpaste="return false"></textarea>
+
+<button onclick="check()">Check</button>
+
+<h3 id="result"></h3>
+
+<script>
+function clean(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function check() {
+  let o = clean(document.getElementById("original").value).split(" ");
+  let t = clean(document.getElementById("typed").value).split(" ");
+
+  let errors = 0;
+  let i = 0, j = 0;
+
+  while (i < o.length && j < t.length) {
+    if (o[i] === t[j]) {
+      i++; j++;
+    } else {
+      errors++;
+      i++; j++;
+    }
+  }
+
+  errors += (o.length - i) + (t.length - j);
+
+  let accuracy = ((o.length - errors) / o.length) * 100;
+  accuracy = accuracy < 0 ? 0 : accuracy.toFixed(2);
+
+  document.getElementById("result").innerText =
+    "Total Words: " + o.length +
+    "\nErrors: " + errors +
+    "\nAccuracy: " + accuracy + "%";
+}
+</script>
+
+</body>
+</html>
